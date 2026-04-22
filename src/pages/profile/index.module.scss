@@ -1,0 +1,26 @@
+.profile-container {
+  padding: 24px;
+  .header {
+    background: #e0e3e9;
+    h1 {
+      padding: 32px;
+      color: #666;
+      font-size: 36px;
+      font-weight: bold;
+      line-height: 28px;
+      text-align: left;
+      font-family: 'Times New Roman', Times, serif;
+    }
+    h2 {
+      padding: 32px;
+      color: #888;
+      font-size: 18px;
+      font-weight: 200;
+      line-height: 24px;
+      text-align: left;
+      font-family:
+        'Microsoft Yahei', 'Hiragino Sans GB', 'Helvetica Neue', Helvetica,
+        tahoma, arial, Verdana, sans-serif, 'WenQuanYi Micro Hei', '\5B8B\4F53';
+    }
+  }
+}

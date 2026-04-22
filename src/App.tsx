@@ -1,61 +1,14 @@
-import './App.css';
-import { Layout, Button, Menu } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Layout, Button, Menu, Spin } from 'antd';
+import axios from 'axios';
+
 import type { MenuProps } from 'antd';
-import {
-  AppstoreOutlined,
-  ContainerOutlined,
-  DesktopOutlined,
-  MailOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  PieChartOutlined,
-} from '@ant-design/icons';
-import React, { useState } from 'react';
+import * as Icons from '@ant-design/icons';
+import './App.css';
 
-type MenuItem = Required<MenuProps>['items'][number];
-
-const items: MenuItem[] = [
-  { key: '1', icon: <PieChartOutlined />, label: 'Option 1' },
-  { key: '2', icon: <DesktopOutlined />, label: 'Option 2' },
-  { key: '3', icon: <ContainerOutlined />, label: 'Option 3' },
-  {
-    key: 'sub1',
-    label: 'Navigation One',
-    icon: <MailOutlined />,
-    children: [
-      { key: '5', label: 'Option 5' },
-      { key: '6', label: 'Option 6' },
-      { key: '7', label: 'Option 7' },
-      { key: '8', label: 'Option 8' },
-    ],
-  },
-  {
-    key: 'sub2',
-    label: 'Navigation Two',
-    icon: <AppstoreOutlined />,
-    children: [
-      { key: '9', label: 'Option 9' },
-      { key: '10', label: 'Option 10' },
-      {
-        key: 'sub3',
-        label: 'Submenu',
-        children: [
-          { key: '11', label: 'Option 11' },
-          { key: '12', label: 'Option 12' },
-        ],
-      },
-    ],
-  },
-];
-
-const { Header, Footer, Sider, Content } = Layout;
-const headerStyle: React.CSSProperties = {
-  textAlign: 'center',
-  color: '#fff',
-  height: 64,
-  paddingInline: 48,
-  lineHeight: '64px',
-};
+import Profile from './pages/profile';
+const { Sider, Content } = Layout;
 
 const contentStyle: React.CSSProperties = {
   textAlign: 'center',
@@ -70,21 +23,81 @@ const siderStyle: React.CSSProperties = {
   color: '#fff',
 };
 
-const footerStyle: React.CSSProperties = {
-  textAlign: 'center',
-  color: '#fff',
-};
-
 const layoutStyle = {
   borderRadius: 8,
   overflow: 'hidden',
 };
+
+const iconMap: Record<string, React.ComponentType> = {
+  PieChartOutlined: Icons.PieChartOutlined,
+  DesktopOutlined: Icons.DesktopOutlined,
+  ContainerOutlined: Icons.ContainerOutlined,
+  MailOutlined: Icons.MailOutlined,
+  AppstoreOutlined: Icons.AppstoreOutlined,
+  MenuFoldOutlined: Icons.MenuFoldOutlined,
+  MenuUnfoldOutlined: Icons.MenuUnfoldOutlined,
+};
+
+// 递归转换后端菜单数据，将 icon 字符串替换为图标组件
+const transformMenuItems = (items: any[]): MenuProps['items'] => {
+  return items.map((item) => {
+    const newItem: any = { ...item };
+    if (item.icon && iconMap[item.icon]) {
+      newItem.icon = React.createElement(iconMap[item.icon]);
+    }
+    if (item.children) {
+      newItem.children = transformMenuItems(item.children);
+    }
+    return newItem;
+  });
+};
+
+const keyToPath: Record<string, string> = {
+  '1': '/profile',
+  '2': '/profile',
+};
+
 const App = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [selectedKey, setSelectedKey] = useState(['1']);
+  const [menuItems, setMenuItems] = useState<MenuProps['items']>([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const toggleCollapsed = () => {
-    setCollapsed(!collapsed);
+  useEffect(() => {
+    // 请求后端菜单数据
+    axios
+      .get('/api/menu')
+      .then((response) => {
+        const transformed = transformMenuItems(response.data);
+        setMenuItems(transformed);
+      })
+      .catch((error) => {
+        console.error('Failed to load menu:', error);
+        // 可设置 fallback 静态数据
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const toggleCollapsed = () => setCollapsed(!collapsed);
+
+  // 处理菜单点击：根据 key 跳转路由
+  const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
+    const path = keyToPath[key];
+    setSelectedKey([key]);
+    if (path) {
+      navigate(path);
+    }
   };
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', marginTop: 50 }}>
+        <Spin />
+      </div>
+    );
+  }
+
   return (
     <div className="content">
       <Layout style={layoutStyle}>
@@ -94,7 +107,11 @@ const App = () => {
             onClick={toggleCollapsed}
             style={{ marginBottom: 16 }}
           >
-            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            {collapsed ? (
+              <Icons.MenuUnfoldOutlined />
+            ) : (
+              <Icons.MenuFoldOutlined />
+            )}
           </Button>
           <Menu
             defaultSelectedKeys={['1']}
@@ -102,13 +119,19 @@ const App = () => {
             mode="inline"
             theme="dark"
             inlineCollapsed={collapsed}
-            items={items}
+            items={menuItems}
+            onClick={handleMenuClick}
+            selectedKeys={selectedKey}
           />
         </Sider>
         <Layout>
-          <Header style={headerStyle}>Header</Header>
-          <Content style={contentStyle}>Content</Content>
-          <Footer style={footerStyle}>Footer</Footer>
+          <Content style={contentStyle}>
+            <Routes>
+              <Route path="/profile" element={<Profile />} />
+              {/* 其他路由 */}
+              <Route path="*" element={<div>404</div>} />
+            </Routes>
+          </Content>
         </Layout>
       </Layout>
     </div>
