@@ -8,7 +8,7 @@ interface DataType {
   key: string;
   name: string;
   number: number;
-  score: string;
+  describe: string;
   link?: string;
 }
 
@@ -35,9 +35,9 @@ const columns: TableProps<DataType>['columns'] = [
     key: 'number',
   },
   {
-    title: '成绩',
-    dataIndex: 'score',
-    key: 'score',
+    title: 'Describe',
+    dataIndex: 'describe',
+    key: 'describe',
   },
   {
     title: 'Action',
@@ -64,42 +64,43 @@ const data: DataType[] = [
     key: '1',
     name: '《计算机网络》',
     number: 1,
-    score: '作为一班之长，努力学习，天天向上，最后61分飘过~',
+    describe: '想要成为一名合格的网管，《计算机网络》是必须精通的。',
     link: 'https://weread.qq.com/web/reader/af532c005a007caf51371b1kc81322c012c81e728d9d180',
   },
   {
     key: '2',
     name: '《数据结构》',
     number: 2,
-    score: 'London No. 1 Lake Park',
+    describe: '掌握得了数据结构，却掌握不了 TA 心里的结构',
     link: 'https://www.bilibili.com/video/av22258871/?vd_source=d17ba4e044dffc3b7236a0e7ec5b4f0b',
   },
   {
     key: '3',
     name: '《计算机组成原理》',
     number: 3,
-    score: 'Sydney No. 1 Lake Park',
+    describe:
+      '这个我熟，计算机的组成分为显卡、主板、CPU、内存条… 听说5080已经上市了，我得抓紧攒钱了',
     link: 'https://www.bilibili.com/video/BV1ng37zfEg5/?vd_source=d17ba4e044dffc3b7236a0e7ec5b4f0b',
   },
   {
     key: '4',
     name: '《操作系统》',
     number: 4,
-    score: 'New York No. 1 Lake Park',
+    describe: '华为鸿蒙，遥遥领先！',
     link: 'https://weread.qq.com/web/reader/db8329d071cc7f70db8a479',
   },
   {
     key: '5',
     name: '《离散数学》',
     number: 5,
-    score: 'London No. 1 Lake Park',
+    describe: '数学为什么要离散？',
     link: 'https://www.bilibili.com/video/BV13FQoB3EMW/?vd_source=d17ba4e044dffc3b7236a0e7ec5b4f0b',
   },
   {
     key: '6',
     name: '《C语言》',
     number: 6,
-    score: 'Sydney No. 1 Lake Park',
+    describe: '我之所以头大，就是学指针学的',
     link: 'https://www.runoob.com/cprogramming/c-tutorial.html',
   },
 ];
@@ -152,14 +153,14 @@ const BaseInfo: React.FC = () => {
           好了，上面只是一些官方客套的介绍，你肯定还对我的专业课程感兴趣！想了解我们在大学里都学什么东西吗，那就继续往下看吧
           ：）
         </p>
-        <div className={styles.gameIntro}>
-          这是一个骰子小游戏，点击按钮即可投掷，我们有一个表格可以将骰子的点数和我们的课程对应起来，当你投掷出某个点数时，就能看到对应的课程介绍啦。
-        </div>
         <Table<DataType>
           columns={columns}
           dataSource={data}
           pagination={false}
         />
+        <div className={styles.gameIntro}>
+          这是一个骰子小游戏，点击按钮即可投掷，我们表格里已经将骰子的点数和我们的课程对应起来，当你投掷出某个点数时，就能看到对应的课程介绍（正经版）啦。
+        </div>
         <div className={styles.diceSection}>
           <DiceRoller setRandomVal={setRandomVal} />
           <div className={styles.courseDesc}>

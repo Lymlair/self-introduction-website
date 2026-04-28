@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Layout, Button, Menu, Spin } from 'antd';
 import axios from 'axios';
+import { fetchMenu } from './api/menu';
 
 import type { MenuProps } from 'antd';
 import * as Icons from '@ant-design/icons';
 import './App.css';
 
 import Profile from './pages/profile';
+import Skill from './pages/skill';
 const { Sider, Content } = Layout;
 
 const contentStyle: React.CSSProperties = {
@@ -54,7 +56,7 @@ const transformMenuItems = (items: any[]): MenuProps['items'] => {
 
 const keyToPath: Record<string, string> = {
   '1': '/profile',
-  '2': '/profile',
+  '2': '/skill',
 };
 
 const App = () => {
@@ -66,9 +68,9 @@ const App = () => {
 
   useEffect(() => {
     // 请求后端菜单数据
-    axios
-      .get('/api/menu')
+    fetchMenu()
       .then((response) => {
+        console.log('Menu data:', response);
         const transformed = transformMenuItems(response.data);
         setMenuItems(transformed);
       })
@@ -76,7 +78,10 @@ const App = () => {
         console.error('Failed to load menu:', error);
         // 可设置 fallback 静态数据
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        navigate('/profile'); // 默认跳转到个人信息页
+      });
   }, []);
 
   const toggleCollapsed = () => setCollapsed(!collapsed);
@@ -128,6 +133,7 @@ const App = () => {
           <Content style={contentStyle}>
             <Routes>
               <Route path="/profile" element={<Profile />} />
+              <Route path="/skill" element={<Skill />} />
               {/* 其他路由 */}
               <Route path="*" element={<div>404</div>} />
             </Routes>
