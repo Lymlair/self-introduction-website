@@ -7,7 +7,7 @@ import axios from 'axios';
 const baseURL = import.meta.env.PROD
   ? 'https://self-introduction-website-server.onrender.com' // 如果你使用 Netlify Functions + 重写规则，相对路径即可
   : // : 'https://your-backend.onrender.com/api'; // 如果你用 Render 等独立后端，取消注释并替换
-    '/api'; // 开发环境利用 Rsbuild 代理
+    '/'; // 开发环境利用 Rsbuild 代理
 
 // 方案 B（推荐）：通过 .env 文件 + import.meta.env.PUBLIC_API_BASE_URL
 // 详见后文说明
@@ -34,5 +34,5 @@ export interface MenuItem {
 
 // 获取菜单数据
 export const fetchMenu = (): Promise<MenuItem[]> => {
-  return request.get('/menu'); // 最终请求地址 = baseURL + '/menu'
+  return request.get('/api/menu'); // 最终请求地址 = baseURL + '/menu'
 };
